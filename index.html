@@ -638,7 +638,7 @@ function renderQuestion() {
     const isCorrect = checkAnswer(q, ua.selected);
     expHtml = `<div class="explanation ${isCorrect ? 'correct-exp' : 'wrong-exp'}">
       <div class="answer-line">${isCorrect ? '✅ 回答正确！' : '❌ 回答错误'}</div>
-      <div>正确答案：<strong>${q.answer}</strong>${ua.selected.length ? '　　你的选择：' + ua.selected.join('') : ''}</div>
+      <div>正确答案：<strong>${q.answer}</strong>${ua.selected.length ? '  你的选择：' + ua.selected.sort().join('') : ''}</div>
     </div>`;
   }
 
@@ -646,70 +646,15 @@ function renderQuestion() {
     <div class="question-card fade-in">
       <span class="q-type ${isMulti ? 'multi' : 'single'}">${q.type}</span>
       <div class="q-num">第 ${currentIndex+1} 题</div>
+      
+      <div style="margin: 10px 0; padding: 8px 12px; background: var(--bg-selected); border-radius: 6px; font-size: 14px; color: var(--primary); font-weight: bold;">
+        当前选择：${ua.selected.length ? ua.selected.sort().join(', ') : '无'}
+      </div>
+      
       <div class="q-text">${escHtml(q.q)}</div>
       <div class="option-list">${optsHtml}</div>
       ${expHtml}
     </div>`;
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function selectOption(idx) {
-  const ua = userAnswers[currentIndex];
-  if (ua.checked) return;
-  const q = currentQuiz[currentIndex];
-  const letter = OPT_LETTERS[idx];
-
-  if (q.type === '多选题') {
-    const pos = ua.selected.indexOf(letter);
-    if (pos >= 0) ua.selected.splice(pos, 1);
-    else ua.selected.push(letter);
-  } else {
-    ua.selected = [letter];
-  }
-  renderQuestion();
-}
-
-function checkAnswer(q, selected) {
-  if (q.type === '单选题') return selected.length === 1 && q.answer === selected[0];
-  const sorted = [...selected].sort().join('');
-  return sorted === q.answer;
-}
-
-function nextQuestion() {
-  const ua = userAnswers[currentIndex];
-  const q = currentQuiz[currentIndex];
-
-  if (!ua.checked) {
-    if (!ua.selected.length) { toast('请先选择答案'); return; }
-    ua.checked = true;
-    const isCorrect = checkAnswer(q, ua.selected);
-    if (isCorrect) {
-      correctCount++;
-      // Remove from wrong if exists
-      removeWrong(q);
-    } else {
-      addWrong(q, ua.selected);
-    }
-    renderQuestion();
-    return;
-  }
-
-  if (currentIndex < currentQuiz.length - 1) {
-    currentIndex++;
-    renderQuestion();
-  } else {
-    showResult();
-  }
-}
-
-function prevQuestion() {
-  if (currentIndex > 0) {
-    currentIndex--;
-    renderQuestion();
-  }
 }
 
 // ==================== Wrong Questions ====================
