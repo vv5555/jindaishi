@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中国近现代史纲要 · 题库复习</title>
+<style>
+:root {
+  --bg: #f5f5f5;
+  --bg-card: #ffffff;
+  --bg-option: #f8f9fa;
+  --bg-option-hover: #e9ecef;
+  --bg-selected: #cce5ff;
+  --bg-correct: #d4edda;
+  --bg-wrong: #f8d7da;
+  --text: #212529;
+  --text-secondary: #6c757d;
+  --border: #dee2e6;
+  --primary: #4361ee;
+  --primary-hover: #3a56d4;
+  --danger: #e63946;
+  --success: #2d6a4f;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --radius: 12px;
+  --transition: 0.25s ease;
+}
+[data-theme="dark"] {
+  --bg: #1a1a2e;
+  --bg-card: #16213e;
+  --bg-option: #1a1a2e;
+  --bg-option-hover: #252547;
+  --bg-selected: #1b3a5c;
+  --bg-correct: #1b4332;
+  --bg-wrong: #5c1a1a;
+  --text: #e0e0e0;
+  --text-secondary: #8d99ae;
+  --border: #2d3250;
+  --primary: #6c8cff;
+  --primary-hover: #5a7af0;
+  --danger: #ff6b6b;
+  --success: #52b788;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background var(--transition), color var(--transition);
+  min-height: 100vh;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 20px 16px; }
+
+/* Header */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 0; margin-bottom: 20px;
+}
+.header h1 { font-size: 1.4em; font-weight: 700; }
+.header-right { display: flex; gap: 10px; align-items: center; }
+.btn {
+  padding: 8px 18px; border: none; border-radius: 8px;
+  font-size: 14px; cursor: pointer; font-weight: 500;
+  transition: all var(--transition); display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.btn-outline {
+  background: transparent; color: var(--text); border: 1.5px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { opacity: 0.85; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-sm { padding: 5px 12px; font-size: 13px; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--border);
+  background: var(--bg-card); color: var(--text); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  transition: all var(--transition);
+}
+.icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Upload Screen */
+.upload-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 70vh; text-align: center; gap: 24px;
+}
+.upload-box {
+  border: 2.5px dashed var(--border); border-radius: var(--radius);
+  padding: 60px 40px; cursor: pointer; transition: all var(--transition);
+  width: 100%; max-width: 500px; background: var(--bg-card);
+}
+.upload-box:hover, .upload-box.dragover {
+  border-color: var(--primary); background: var(--bg-selected);
+}
+.upload-box .icon { font-size: 48px; margin-bottom: 12px; }
+.upload-box p { color: var(--text-secondary); margin-top: 8px; }
+.upload-box h3 { font-size: 1.1em; }
+
+/* Stats Bar */
+.stats-bar {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.stat-card {
+  flex: 1; min-width: 100px; padding: 14px 16px;
+  background: var(--bg-card); border-radius: var(--radius);
+  box-shadow: var(--shadow); text-align: center;
+}
+.stat-card .num { font-size: 1.6em; font-weight: 700; color: var(--primary); }
+.stat-card .label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* Mode Selector */
+.mode-selector {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.mode-card {
+  flex: 1; min-width: 200px; padding: 20px; background: var(--bg-card);
+  border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer;
+  border: 2px solid transparent; transition: all var(--transition); text-align: center;
+}
+.mode-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.mode-card .icon { font-size: 36px; margin-bottom: 8px; }
+.mode-card h3 { font-size: 1em; margin-bottom: 4px; }
+.mode-card p { font-size: 12px; color: var(--text-secondary); }
+
+/* Quiz Area */
+.quiz-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+}
+.progress-bar {
+  width: 100%; height: 6px; background: var(--border); border-radius: 3px;
+  margin-bottom: 20px; overflow: hidden;
+}
+.progress-bar .fill {
+  height: 100%; background: var(--primary); border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.question-card {
+  background: var(--bg-card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 28px 24px; margin-bottom: 16px;
+}
+.q-type {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 12px; font-weight: 600; margin-bottom: 12px;
+}
+.q-type.single { background: #e0f2fe; color: #0369a1; }
+.q-type.multi { background: #fce7f3; color: #be185d; }
+[data-theme="dark"] .q-type.single { background: #0c4a6e; color: #7dd3fc; }
+[data-theme="dark"] .q-type.multi { { background: #831843; color: #f9a8d4; }
+.q-num { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+.q-text { font-size: 1.05em; line-height: 1.7; margin-bottom: 20px; font-weight: 500; }
+
+.option-list { display: flex; flex-direction: column; gap: 10px; }
+.option-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px; border-radius: 10px;
+  background: var(--bg-option); border: 2px solid transparent;
+  cursor: pointer; transition: all var(--transition); user-select: none;
+}
+.option-item:hover { background: var(--bg-option-hover); }
+.option-item.selected { border-color: var(--primary); background: var(--bg-selected); }
+.option-item.correct { border-color: var(--success); background: var(--bg-correct); }
+.option-item.wrong { border-color: var(--danger); background: var(--bg-wrong); }
+.option-item.reveal { border-color: var(--success); background: var(--bg-correct); }
+.option-label {
+  min-width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px;
+  background: var(--bg-card); border: 2px solid var(--border);
+  flex-shrink: 0; transition: all var(--transition);
+}
+.option-item.selected .option-label { border-color: var(--primary); background: var(--primary); color: #fff; }
+.option-item.correct .option-label { border-color: var(--success); background: var(--success); color: #fff; }
+.option-item.wrong .option-label { border-color: var(--danger); background: var(--danger); color: #fff; }
+.option-item.reveal .option-label { border-color: var(--success); background: var(--success); color: #fff; }
+.option-text { line-height: 1.6; font-size: 14px; padding-top: 2px; }
+
+/* Explanation */
+.explanation {
+  margin-top: 16px; padding: 14px 16px; border-radius: 10px;
+  font-size: 14px; line-height: 1.6;
+}
+.explanation.correct-exp { background: var(--bg-correct); color: var(--success); }
+.explanation.wrong-exp { background: var(--bg-wrong); color: var(--danger); }
+.explanation .answer-line { font-weight: 600; margin-bottom: 4px; }
+
+/* Nav buttons */
+.quiz-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 20px; flex-wrap: wrap; gap: 10px;
+}
+
+/* Result Screen */
+.result-screen { text-align: center; padding: 40px 0; }
+.result-screen .big-icon { font-size: 64px; margin-bottom: 16px; }
+.result-screen h2 { font-size: 1.5em; margin-bottom: 8px; }
+.result-screen .score { font-size: 3em; font-weight: 800; color: var(--primary); margin: 16px 0; }
+.result-screen .score span { font-size: 0.4em; color: var(--text-secondary); }
+.result-detail {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 20px 0;
+}
+.result-detail .item {
+  padding: 12px 24px; background: var(--bg-card); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.result-detail .item .n { font-size: 1.4em; font-weight: 700; }
+.result-detail .item .l { font-size: 12px; color: var(--text-secondary); }
+.result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+
+/* Wrong Book */
+.wrong-list { display: flex; flex-direction: column; gap: 12px; }
+.wrong-item {
+  background: var(--bg-card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px 20px;
+  border-left: 4px solid var(--danger);
+}
+.wrong-item .wi-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.wrong-item .wi-type { font-size: 12px; color: var(--text-secondary); }
+.wrong-item .wi-q { font-size: 14px; line-height: 1.6; margin-bottom: 10px; }
+.wrong-item .wi-opts { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+.wrong-item .wi-ans { font-size: 13px; color: var(--success); font-weight: 600; margin-top: 6px; }
+.wrong-item .wi-actions { display: flex; gap: 8px; margin-top: 10px; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+/* Timer */
+.timer { font-size: 14px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container { padding: 12px; }
+  .header h1 { font-size: 1.1em; }
+  .question-card { padding: 20px 16px; }
+  .stat-card { min-width: 70px; padding: 10px 8px; }
+  .stat-card .num { font-size: 1.3em; }
+}
+
+/* Animations */
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+.shake { animation: shake 0.4s ease; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  padding: 10px 24px; background: #333; color: #fff; border-radius: 8px;
+  font-size: 14px; z-index: 999; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--bg-card); border-radius: var(--radius); padding: 24px;
+  max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.modal h3 { margin-bottom: 12px; }
+.modal input[type=number] {
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 16px; background: var(--bg-option);
+  color: var(--text); margin: 12px 0;
+}
+.modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>📜 中国近现代史纲要</h1>
+    <div class="header-right">
+      <span class="timer" id="timer"></span>
+      <button class="icon-btn" id="themeBtn" title="切换主题">🌙</button>
+      <button class="icon-btn" id="homeBtn" title="返回首页" style="display:none">🏠</button>
+    </div>
+  </div>
+
+  <!-- Upload Screen -->
+  <div id="uploadScreen" class="upload-screen fade-in">
+    <div class="upload-box" id="uploadBox">
+      <div class="icon">📂</div>
+      <h3>导入题库 Excel 文件</h3>
+      <p>支持 .xlsx 格式，点击或拖拽上传</p>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+    </div>
+    <div style="color:var(--text-secondary);font-size:13px;">
+      格式要求：题号 | 题型 | 题目内容 | 选项A | 选项B | 选项C | 选项D | 正确答案
+    </div>
+  </div>
+
+  <!-- Home Screen -->
+  <div id="homeScreen" style="display:none">
+    <div class="stats-bar fade-in" id="statsBar"></div>
+    <div class="mode-selector fade-in">
+      <div class="mode-card" onclick="startRandomQuiz(50)">
+        <div class="icon">🎲</div>
+        <h3>随机 50 题</h3>
+        <p>从题库中随机抽取</p>
+      </div>
+      <div class="mode-card" onclick="showCustomModal()">
+        <div class="icon">📝</div>
+        <h3>自定义数量</h3>
+        <p>选择抽题数量</p>
+      </div>
+      <div class="mode-card" onclick="startWrongQuiz()">
+        <div class="icon">📕</div>
+        <h3>错题本</h3>
+        <p id="wrongCountLabel">0 道错题</p>
+      </div>
+      <div class="mode-card" onclick="startAllQuiz()">
+        <div class="icon">📚</div>
+        <h3>顺序刷题</h3>
+        <p>按顺序逐题练习</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Screen -->
+  <div id="quizScreen" style="display:none">
+    <div class="quiz-header fade-in">
+      <span id="quizProgress" style="font-size:14px;color:var(--text-secondary)"></span>
+      <span id="quizScore" style="font-size:14px;font-weight:600"></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+    <div id="questionArea"></div>
+    <div class="quiz-nav">
+      <button class="btn btn-outline" id="prevBtn" onclick="prevQuestion()">← 上一题</button>
+      <span id="qIndicator" style="font-size:13px;color:var(--text-secondary)"></span>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">下一题 →</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="resultScreen" style="display:none" class="result-screen fade-in"></div>
+
+  <!-- Wrong Book Screen -->
+  <div id="wrongScreen" style="display:none">
+    <div class="quiz-header fade-in">
+      <h2>📕 错题本</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="exportWrong()">导出错题</button>
+        <button class="btn btn-danger btn-sm" id="clearWrongBtn" onclick="clearWrong()">清空</button>
+      </div>
+    </div>
+    <div id="wrongListArea"></div>
+  </div>
+</div>
+
+<!-- Custom Count Modal -->
+<div class="modal-overlay" id="customModal">
+  <div class="modal">
+    <h3>📝 自定义抽题数量</h3>
+    <p style="font-size:14px;color:var(--text-secondary)">请输入题目数量（1 - <span id="maxCount"></span>）</p>
+    <input type="number" id="customCount" min="1" value="20">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+      <button class="btn btn-primary" onclick="startCustomQuiz()">开始</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ==================== State ====================
+let allQuestions = [];      // [{id,type,q,opts:[],answer,sourceIdx}]
+let wrongQuestions = [];    // [{...question, wrongAnswer, timestamp}]
+let currentQuiz = [];       // current quiz questions
+let currentIndex = 0;
+let userAnswers = [];       // {selected:[], checked:false}
+let correctCount = 0;
+let quizStartTime = null;
+let timerInterval = null;
+let currentMode = '';       // 'random','wrong','all','custom'
+
+// ==================== Theme ====================
+function initTheme() {
+  const saved = localStorage.getItem('quiz-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+}
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('quiz-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+});
+initTheme();
+
+// ==================== Toast ====================
+function toast(msg, ms=2000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), ms);
+}
+
+// ==================== File Upload ====================
+const uploadBox = document.getElementById('uploadBox');
+const fileInput = document.getElementById('fileInput');
+
+uploadBox.addEventListener('click', () => fileInput.click());
+uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.classList.add('dragover'); });
+uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+uploadBox.addEventListener('drop', e => {
+  e.preventDefault(); uploadBox.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      parseQuestions(data);
+      if (allQuestions.length === 0) {
+        toast('未识别到题目，请检查文件格式');
+        return;
+      }
+      saveToStorage();
+      showHome();
+      toast(`成功导入 ${allQuestions.length} 道题`);
+    } catch(err) {
+      toast('文件解析失败：' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseQuestions(data) {
+  allQuestions = [];
+  // Find header row
+  let headerIdx = -1;
+  for (let i = 0; i < Math.min(5, data.length); i++) {
+    const row = data[i];
+    if (row && row.some(c => typeof c === 'string' && (c.includes('题号') || c.includes('题目')))) {
+      headerIdx = i; break;
+    }
+  }
+  if (headerIdx === -1) headerIdx = 0;
+
+  for (let i = headerIdx + 1; i < data.length; i++) {
+    const row = data[i];
+    if (!row || !row[0] && row[0] !== 0) continue;
+    const qnum = row[0];
+    const type = row[1] || '';
+    const qText = row[2] || '';
+    if (!qText.trim()) continue;
+    
+    const opts = [];
+    for (let j = 3; j <= 6; j++) {
+      if (row[j] !== undefined && row[j] !== null && String(row[j]).trim()) {
+        opts.push(String(row[j]).trim());
+      }
+    }
+    const answer = String(row[7] || '').trim().toUpperCase();
+    if (!answer) continue;
+
+    allQuestions.push({
+      id: allQuestions.length,
+      type: type.includes('多选') ? '多选题' : '单选题',
+      q: String(qText).trim(),
+      opts: opts,
+      answer: answer,
+      sourceIdx: i
+    });
+  }
+}
+
+// ==================== Storage ====================
+function saveToStorage() {
+  localStorage.setItem('quiz-bank', JSON.stringify(allQuestions));
+  localStorage.setItem('quiz-wrong', JSON.stringify(wrongQuestions));
+}
+function loadFromStorage() {
+  const bank = localStorage.getItem('quiz-bank');
+  const wrong = localStorage.getItem('quiz-wrong');
+  if (bank) allQuestions = JSON.parse(bank);
+  if (wrong) wrongQuestions = JSON.parse(wrong);
+}
+
+// ==================== Navigation ====================
+function showScreen(id) {
+  ['uploadScreen','homeScreen','quizScreen','resultScreen','wrongScreen'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+  document.getElementById('homeBtn').style.display = id === 'uploadScreen' ? 'none' : 'flex';
+  clearInterval(timerInterval);
+  document.getElementById('timer').textContent = '';
+}
+
+function showHome() {
+  showScreen('homeScreen');
+  renderStats();
+}
+
+document.getElementById('homeBtn').addEventListener('click', () => {
+  if (currentQuiz.length && !userAnswers.every(a => a && a.checked)) {
+    if (!confirm('确定退出当前练习？')) return;
+  }
+  showHome();
+});
+
+function renderStats() {
+  const total = allQuestions.length;
+  const single = allQuestions.filter(q => q.type === '单选题').length;
+  const multi = total - single;
+  const wrongTotal = wrongQuestions.length;
+  
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card"><div class="num">${total}</div><div class="label">总题数</div></div>
+    <div class="stat-card"><div class="num">${single}</div><div class="label">单选题</div></div>
+    <div class="stat-card"><div class="num">${multi}</div><div class="label">多选题</div></div>
+    <div class="stat-card"><div class="num">${wrongTotal}</div><div class="label">错题</div></div>
+  `;
+  document.getElementById('wrongCountLabel').textContent = `${wrongTotal} 道错题`;
+  document.getElementById('maxCount').textContent = total;
+  document.getElementById('customCount').max = total;
+}
+
+// ==================== Quiz Logic ====================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz(questions, mode) {
+  if (!questions.length) { toast('没有题目可练习'); return; }
+  currentMode = mode;
+  currentQuiz = questions;
+  currentIndex = 0;
+  userAnswers = currentQuiz.map(() => ({ selected: [], checked: false }));
+  correctCount = 0;
+  quizStartTime = Date.now();
+  startTimer();
+  showScreen('quizScreen');
+  renderQuestion();
+}
+
+function startRandomQuiz(n) {
+  const picked = shuffle(allQuestions).slice(0, Math.min(n, allQuestions.length));
+  startQuiz(picked, 'random');
+}
+
+function startAllQuiz() {
+  startQuiz([...allQuestions], 'all');
+}
+
+function startWrongQuiz() {
+  if (!wrongQuestions.length) { toast('错题本为空'); return; }
+  const questions = wrongQuestions.map(w => ({
+    ...w, _isWrong: true
+  }));
+  startQuiz(questions, 'wrong');
+}
+
+function showCustomModal() {
+  document.getElementById('customModal').classList.add('show');
+  document.getElementById('customCount').focus();
+}
+function closeCustomModal() {
+  document.getElementById('customModal').classList.remove('show');
+}
+function startCustomQuiz() {
+  const n = parseInt(document.getElementById('customCount').value) || 20;
+  closeCustomModal();
+  startRandomQuiz(n);
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const s = Math.floor((Date.now() - quizStartTime) / 1000);
+    const m = Math.floor(s / 60);
+    const ss = s % 60;
+    document.getElementById('timer').textContent = `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  }, 1000);
+}
+
+// ==================== Render Question ====================
+const OPT_LETTERS = ['A','B','C','D','E'];
+
+function renderQuestion() {
+  const q = currentQuiz[currentIndex];
+  const ua = userAnswers[currentIndex];
+  const total = currentQuiz.length;
+  const isMulti = q.type === '多选题';
+
+  document.getElementById('quizProgress').textContent = `第 ${currentIndex+1} / ${total} 题`;
+  document.getElementById('quizScore').textContent = `✓ ${correctCount}`;
+  document.getElementById('progressFill').style.width = `${((currentIndex+1)/total)*100}%`;
+  document.getElementById('qIndicator').textContent = `${currentIndex+1} / ${total}`;
+  document.getElementById('prevBtn').disabled = currentIndex === 0;
+
+  const isLast = currentIndex === total - 1;
+  document.getElementById('nextBtn').textContent = ua.checked
+    ? (isLast ? '查看结果' : '下一题 →')
+    : '确认';
+
+  let optsHtml = q.opts.map((opt, i) => {
+    const letter = OPT_LETTERS[i];
+    let cls = 'option-item';
+    if (ua.selected.includes(letter)) cls += ' selected';
+    if (ua.checked) {
+      if (q.answer.includes(letter)) cls += ua.selected.includes(letter) ? ' correct' : ' reveal';
+      else if (ua.selected.includes(letter)) cls += ' wrong';
+    }
+    return `<div class="${cls}" onclick="selectOption(${i})" data-idx="${i}">
+      <div class="option-label">${letter}</div>
+      <div class="option-text">${escHtml(opt)}</div>
+    </div>`;
+  }).join('');
+
+  let expHtml = '';
+  if (ua.checked) {
+    const isCorrect = checkAnswer(q, ua.selected);
+    expHtml = `<div class="explanation ${isCorrect ? 'correct-exp' : 'wrong-exp'}">
+      <div class="answer-line">${isCorrect ? '✅ 回答正确！' : '❌ 回答错误'}</div>
+      <div>正确答案：<strong>${q.answer}</strong>${ua.selected.length ? '　　你的选择：' + ua.selected.join('') : ''}</div>
+    </div>`;
+  }
+
+  document.getElementById('questionArea').innerHTML = `
+    <div class="question-card fade-in">
+      <span class="q-type ${isMulti ? 'multi' : 'single'}">${q.type}</span>
+      <div class="q-num">第 ${currentIndex+1} 题</div>
+      <div class="q-text">${escHtml(q.q)}</div>
+      <div class="option-list">${optsHtml}</div>
+      ${expHtml}
+    </div>`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function selectOption(idx) {
+  const ua = userAnswers[currentIndex];
+  if (ua.checked) return;
+  const q = currentQuiz[currentIndex];
+  const letter = OPT_LETTERS[idx];
+
+  if (q.type === '多选题') {
+    const pos = ua.selected.indexOf(letter);
+    if (pos >= 0) ua.selected.splice(pos, 1);
+    else ua.selected.push(letter);
+  } else {
+    ua.selected = [letter];
+  }
+  renderQuestion();
+}
+
+function checkAnswer(q, selected) {
+  if (q.type === '单选题') return selected.length === 1 && q.answer === selected[0];
+  const sorted = [...selected].sort().join('');
+  return sorted === q.answer;
+}
+
+function nextQuestion() {
+  const ua = userAnswers[currentIndex];
+  const q = currentQuiz[currentIndex];
+
+  if (!ua.checked) {
+    if (!ua.selected.length) { toast('请先选择答案'); return; }
+    ua.checked = true;
+    const isCorrect = checkAnswer(q, ua.selected);
+    if (isCorrect) {
+      correctCount++;
+      // Remove from wrong if exists
+      removeWrong(q);
+    } else {
+      addWrong(q, ua.selected);
+    }
+    renderQuestion();
+    return;
+  }
+
+  if (currentIndex < currentQuiz.length - 1) {
+    currentIndex++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderQuestion();
+  }
+}
+
+// ==================== Wrong Questions ====================
+function addWrong(q, selected) {
+  const exist = wrongQuestions.findIndex(w => w.id === q.id);
+  const entry = {
+    id: q.id, type: q.type, q: q.q, opts: q.opts, answer: q.answer,
+    wrongAnswer: selected.join(''), timestamp: Date.now()
+  };
+  if (exist >= 0) wrongQuestions[exist] = entry;
+  else wrongQuestions.push(entry);
+  saveToStorage();
+}
+
+function removeWrong(q) {
+  const idx = wrongQuestions.findIndex(w => w.id === q.id);
+  if (idx >= 0) { wrongQuestions.splice(idx, 1); saveToStorage(); }
+}
+
+function renderWrongBook() {
+  const area = document.getElementById('wrongListArea');
+  if (!wrongQuestions.length) {
+    area.innerHTML = `<div class="empty-state"><div class="icon">🎉</div><p>暂无错题，继续保持！</p></div>`;
+    return;
+  }
+  area.innerHTML = '<div class="wrong-list">' + wrongQuestions.map((w, i) => {
+    const optsHtml = w.opts.map((o, j) => {
+      const letter = OPT_LETTERS[j];
+      let style = '';
+      if (w.answer.includes(letter)) style = 'color:var(--success);font-weight:600;';
+      if (w.wrongAnswer.includes(letter)) style = 'color:var(--danger);font-weight:600;text-decoration:line-through;';
+      return `<div style="${style}">${letter}. ${escHtml(o)}</div>`;
+    }).join('');
+    return `<div class="wrong-item">
+      <div class="wi-head">
+        <span class="wi-type">${w.type}</span>
+        <button class="btn btn-outline btn-sm" onclick="removeWrongByIndex(${i})">移除</button>
+      </div>
+      <div class="wi-q">${escHtml(w.q)}</div>
+      <div class="wi-opts">${optsHtml}</div>
+      <div class="wi-ans">正确答案：${w.answer}　　你的选择：${w.wrongAnswer}</div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function removeWrongByIndex(i) {
+  wrongQuestions.splice(i, 1);
+  saveToStorage();
+  renderWrongBook();
+  renderStats();
+  toast('已移除');
+}
+
+function clearWrong() {
+  if (!confirm('确定清空所有错题？')) return;
+  wrongQuestions = [];
+  saveToStorage();
+  renderWrongBook();
+  renderStats();
+  toast('错题已清空');
+}
+
+function exportWrong() {
+  if (!wrongQuestions.length) { toast('错题本为空'); return; }
+  let text = '中国近现代史纲要 · 错题本\n' + '='.repeat(40) + '\n\n';
+  wrongQuestions.forEach((w, i) => {
+    text += `${i+1}. [${w.type}] ${w.q}\n`;
+    w.opts.forEach((o, j) => { text += `   ${OPT_LETTERS[j]}. ${o}\n`; });
+    text += `   正确答案：${w.answer}　　你的选择：${w.wrongAnswer}\n\n`;
+  });
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '错题本.txt';
+  a.click();
+  toast('已导出错题本');
+}
+
+// ==================== Result ====================
+function showResult() {
+  clearInterval(timerInterval);
+  showScreen('resultScreen');
+  const total = currentQuiz.length;
+  const pct = Math.round((correctCount / total) * 100);
+  const wrongCount = total - correctCount;
+  const elapsed = Math.floor((Date.now() - quizStartTime) / 1000);
+  const min = Math.floor(elapsed / 60);
+  const sec = elapsed % 60;
+
+  let icon, msg;
+  if (pct >= 90) { icon = '🏆'; msg = '太棒了！几乎满分！'; }
+  else if (pct >= 70) { icon = '😊'; msg = '不错，继续加油！'; }
+  else if (pct >= 60) { icon = '💪'; msg = '及格了，还能更好！'; }
+  else { icon = '📖'; msg = '需要多复习哦！'; }
+
+  document.getElementById('resultScreen').innerHTML = `
+    <div class="big-icon">${icon}</div>
+    <h2>${msg}</h2>
+    <div class="score">${pct}<span>%</span></div>
+    <div class="result-detail">
+      <div class="item"><div class="n" style="color:var(--success)">${correctCount}</div><div class="l">正确</div></div>
+      <div class="item"><div class="n" style="color:var(--danger)">${wrongCount}</div><div class="l">错误</div></div>
+      <div class="item"><div class="n">${total}</div><div class="l">总题数</div></div>
+      <div class="item"><div class="n">${min}:${String(sec).padStart(2,'0')}</div><div class="l">用时</div></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="restartQuiz()">再来一次</button>
+      <button class="btn btn-outline" onclick="reviewWrong()">复习错题 (${wrongCount})</button>
+      <button class="btn btn-outline" onclick="showHome()">返回首页</button>
+    </div>`;
+}
+
+function restartQuiz() {
+  if (currentMode === 'wrong') startWrongQuiz();
+  else if (currentMode === 'all') startAllQuiz();
+  else startQuiz(shuffle(allQuestions).slice(0, currentQuiz.length), currentMode);
+}
+
+function reviewWrong() {
+  const wrongs = currentQuiz.filter((q, i) => userAnswers[i] && !checkAnswer(q, userAnswers[i].selected));
+  if (!wrongs.length) { toast('没有错题'); return; }
+  startQuiz(wrongs, 'wrong');
+}
+
+// ==================== Init ====================
+loadFromStorage();
+if (allQuestions.length) showHome();
+else showScreen('uploadScreen');
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (document.getElementById('quizScreen').style.display === 'none') return;
+  if (e.key >= '1' && e.key <= '5') {
+    const idx = parseInt(e.key) - 1;
+    const q = currentQuiz[currentIndex];
+    if (idx < q.opts.length) selectOption(idx);
+  }
+  if (e.key === 'Enter') nextQuestion();
+  if (e.key === 'ArrowLeft') prevQuestion();
+  if (e.key === 'ArrowRight') nextQuestion();
+});
+</script>
+</body>
+</html>
